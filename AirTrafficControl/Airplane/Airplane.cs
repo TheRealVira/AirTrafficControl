@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Airplane.cs
 // Date - created:2016.08.15 - 17:43
-// Date - current: 2016.08.15 - 18:26
+// Date - current: 2016.08.15 - 18:28
 
 #endregion
 
