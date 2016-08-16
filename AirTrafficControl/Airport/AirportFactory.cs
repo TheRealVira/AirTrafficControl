@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: AirportFactory.cs
 // Date - created:2016.08.15 - 14:32
-// Date - current: 2016.08.15 - 18:28
+// Date - current: 2016.08.16 - 13:12
 
 #endregion
 
@@ -46,8 +46,8 @@ namespace AirTrafficControl.Airport
                 yield return
                     new Airport(CoolNames[rand.Next(0, CoolNames.Length)],
                         new Vector2(
-                            rand.Next((int) Constants.MIN_RAD, (int) (Constants.DISPLAY_WIDTH - Constants.MAX_RAD)),
-                            rand.Next((int) Constants.MIN_RAD, (int) (Constants.DISPLAY_HEIGHT - Constants.MAX_RAD))),
+                            rand.Next((int) Constants.MIN_RAD, (int) (Constants.DisplayWidth - Constants.MAX_RAD)),
+                            rand.Next((int) Constants.MIN_RAD, (int) (Constants.DisplayHeight - Constants.MAX_RAD))),
                         rand.Next((int) Constants.MIN_RAD, (int) Constants.MAX_RAD));
             }
         }

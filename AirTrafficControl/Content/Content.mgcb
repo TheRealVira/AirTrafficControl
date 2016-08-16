@@ -55,3 +55,9 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Airplane.png
 
+#begin Shader/Retro.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shader/Retro.fx
+

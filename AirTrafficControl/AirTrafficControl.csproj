@@ -43,11 +43,12 @@
     <Compile Include="Content\ContentLib.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="Grid.cs" />
+    <Compile Include="Shader\Grid.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Airport\Airport.cs" />
     <Compile Include="Airport\AirportFactory.cs" />
+    <Compile Include="Shader\Retro.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK">

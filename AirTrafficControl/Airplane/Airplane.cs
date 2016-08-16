@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Airplane.cs
 // Date - created:2016.08.15 - 17:43
-// Date - current: 2016.08.15 - 18:28
+// Date - current: 2016.08.16 - 13:12
 
 #endregion
 
@@ -34,7 +34,7 @@ namespace AirTrafficControl.Airplane
             _positon = positon;
             _movement = movement;
             UpdateBoundings();
-            _angle = (_positon + _movement).VectorToAngle() + (float) Math.PI/2;
+            _angle = (float) ((_positon + _movement).VectorToAngle() + Math.PI/2);
         }
 
         public void Draw(SpriteBatch sp)
@@ -45,15 +45,14 @@ namespace AirTrafficControl.Airplane
 
         public void Update(GameTime gT)
         {
-            _positon += _movement*(gT.ElapsedGameTime.Milliseconds/500f);
-            UpdateBoundings();
+            //_positon += _movement*(gT.ElapsedGameTime.Milliseconds/500f);
+            //UpdateBoundings();
         }
 
         private void UpdateBoundings()
         {
-            Boundings = new Rectangle((int) (_positon.X - Game1.Textures["Airplane"].Width/2),
-                (int) (_positon.Y - Game1.Textures["Airplane"].Height/2), Game1.Textures["Airplane"].Width,
-                Game1.Textures["Airplane"].Height);
+            Boundings = new Rectangle((int) (_positon.X - 25),
+                (int) (_positon.Y - 50), 50, 100);
         }
 
 

@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Game1.cs
 // Date - created:2016.08.15 - 14:25
-// Date - current: 2016.08.15 - 18:28
+// Date - current: 2016.08.16 - 13:12
 
 #endregion
 
@@ -17,9 +17,11 @@ using System.Collections.Generic;
 using System.Linq;
 using AirTrafficControl.Airport;
 using AirTrafficControl.Content;
+using AirTrafficControl.Shader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static AirTrafficControl.Constants;
 
 #endregion
 
@@ -34,12 +36,14 @@ namespace AirTrafficControl
 
         public static KeyboardState NewKeyboardState, OldKeyboardState;
         public static MouseState OldMouseState, NewMouseState;
+        private static Random _rand;
 
         public static Dictionary<string, Texture2D> Textures;
         public static Dictionary<string, Effect> Shader;
         private readonly GraphicsDeviceManager _graphics;
         private List<Airplane.Airplane> _airplanes;
         private List<Airport.Airport> _airports;
+        private RenderTarget2D _shadRenderTarget;
         private SpriteBatch _spriteBatch;
 
         public Game1()
@@ -67,8 +71,8 @@ namespace AirTrafficControl
             _graphics.ApplyChanges();
 #endif
 
-            Constants.DISPLAY_WIDTH = _graphics.PreferredBackBufferWidth;
-            Constants.DISPLAY_HEIGHT = _graphics.PreferredBackBufferHeight;
+            DisplayWidth = _graphics.PreferredBackBufferWidth;
+            DisplayHeight = _graphics.PreferredBackBufferHeight;
 
             NewMouseState = new MouseState();
             NewKeyboardState = new KeyboardState(Keys.A);
@@ -77,7 +81,10 @@ namespace AirTrafficControl
 
             CoolPixle2016 = new Texture2D(GraphicsDevice, 1, 1);
             CoolPixle2016.SetData(new[] {Color.White});
-            Constants.ClearColor = Color.Black;
+            ClearColor = Color.Black;
+            _rand = new Random(DateTime.Now.Millisecond);
+
+            _shadRenderTarget = new RenderTarget2D(_graphics.GraphicsDevice, DisplayWidth, DisplayHeight);
 
             base.Initialize();
         }
@@ -91,10 +98,10 @@ namespace AirTrafficControl
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            Textures = ContentLib.LoadStuff<Texture2D>(Content, "Textures");
-            Shader = ContentLib.LoadStuff<Effect>(Content, "Shader");
+            Textures = ContentLib.LoadStuff<Texture2D>(Content, TEXTURE_DIR);
+            Shader = ContentLib.LoadStuff<Effect>(Content, SHADER_DIR);
 
-            _airports = AirportFactory.Factory(new Random(DateTime.Now.Millisecond), Constants.AIRPLANE_COUNT).ToList();
+            _airports = AirportFactory.Factory(_rand, AIRPLANE_COUNT).ToList();
             _airplanes = new List<Airplane.Airplane>
             {
                 new Airplane.Airplane("Tester101", _airports[0]._boundings.Center.ToVector2(), new Vector2(50, 50))
@@ -131,8 +138,10 @@ namespace AirTrafficControl
             {
                 _airports.Clear();
                 _airports =
-                    AirportFactory.Factory(new Random(DateTime.Now.Millisecond), Constants.AIRPLANE_COUNT).ToList();
+                    AirportFactory.Factory(_rand, AIRPLANE_COUNT).ToList();
             }
+
+            Retro.Update(gameTime, _rand);
 
             _airplanes.ForEach(x => x.Update(gameTime));
 
@@ -147,6 +156,20 @@ namespace AirTrafficControl
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            // Draw all stuff into a texture
+            DrawScene(gameTime);
+
+            GraphicsDevice.Clear(ClearColor);
+
+            Retro.Retrorize(_spriteBatch, _shadRenderTarget);
+
+            base.Draw(gameTime);
+        }
+
+        private void DrawScene(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.SetRenderTarget(_shadRenderTarget);
             GraphicsDevice.Clear(Color.Black);
 
             // Drawing the grid by my grid shader
@@ -155,7 +178,7 @@ namespace AirTrafficControl
             _spriteBatch.Begin();
             {
                 // Clear the areas, where the airports will be
-                _airports.ForEach(x => x.DrawFilled(_spriteBatch, gameTime, Constants.ClearColor));
+                _airports.ForEach(x => x.DrawFilled(_spriteBatch, gameTime, ClearColor));
 
                 // Draw the airports
                 _airports.ForEach(x => x.Draw(_spriteBatch, gameTime, Color.White));
@@ -167,7 +190,7 @@ namespace AirTrafficControl
             }
             _spriteBatch.End();
 
-            base.Draw(gameTime);
+            GraphicsDevice.SetRenderTarget(DEFAULT_TARGET);
         }
     }
 }
