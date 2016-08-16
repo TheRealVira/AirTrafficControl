@@ -13,6 +13,7 @@ matrix WorldViewProjection;
 float2 ScreenCoords;
 float4 Color1;
 float4 Color2;
+float Div;
 
 struct VertexShaderOutput
 {
@@ -22,12 +23,9 @@ struct VertexShaderOutput
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-	if (input.Color.a == 1)return input.Color;
-
-	float modu = input.Position.x % 100;
 	float x,y;
-	x = frac(input.Position.x*(ScreenCoords.x/10));
-	y = frac(input.Position.y*(ScreenCoords.y / 10));
+	x = frac(input.Position.x*(ScreenCoords.x / Div));
+	y = frac(input.Position.y*(ScreenCoords.y / Div));
 
 	if (x > 0.9 || y > 0.9) {
 		return Color1;

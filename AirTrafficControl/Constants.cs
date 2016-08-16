@@ -25,7 +25,7 @@ namespace AirTrafficControl
         public const string SHADER_DIR = "Shader";
         public const float MAX_RAD = 500f;
         public const float MIN_RAD = 250f;
-        public const int AIRPLANE_COUNT = 1;
+        public const int AIRPLANE_COUNT = 2;
         public const RenderTarget2D DEFAULT_TARGET = null; // A bit cheaty, but who the hell cares :P
 
         // Constants for the Retro-Shader

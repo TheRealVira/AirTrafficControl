@@ -21,17 +21,22 @@ namespace AirTrafficControl.Shader
 {
     internal static class Grid
     {
-        private static readonly Vector4 COLOR1 = new Vector4(0, 1, 0, 1);
+        public static void Initialize()
+        {
+            Game1.Shader["Grid"].Parameters["ScreenCoords"].SetValue(new Vector2(Constants.DisplayWidth,
+                Constants.DisplayHeight));
+            Game1.Shader["Grid"].Parameters["Div"].SetValue(5f);
+            Game1.Shader["Grid"].Parameters["Color1"].SetValue(COLOR1);
+            Game1.Shader["Grid"].Parameters["Color2"].SetValue(Color.Transparent.ToVector4());
+            Game1.Shader["Grid"].CurrentTechnique.Passes[0].Apply();
+        }
+
+        private static readonly Vector4 COLOR1 = new Vector4(.01f, .1f, .01f, 1);
 
         public static void Draw(SpriteBatch sp)
         {
-            sp.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, Game1.Shader["Grid"]);
+            sp.Begin(SpriteSortMode.Deferred, null, null, null, null, Game1.Shader["Grid"]);
             {
-                Game1.Shader["Grid"].Parameters["ScreenCoords"].SetValue(new Vector2(Constants.DisplayWidth,
-                    Constants.DisplayHeight));
-                Game1.Shader["Grid"].Parameters["Color1"].SetValue(COLOR1);
-                Game1.Shader["Grid"].Parameters["Color2"].SetValue(Constants.ClearColor.ToVector4());
-                Game1.Shader["Grid"].CurrentTechnique.Passes[0].Apply();
                 sp.Draw(Game1.CoolPixle2016, new Rectangle(0, 0, Constants.DisplayWidth, Constants.DisplayHeight),
                     Color.Transparent);
             }

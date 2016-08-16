@@ -46,6 +46,8 @@ namespace AirTrafficControl
         private RenderTarget2D _shadRenderTarget;
         private SpriteBatch _spriteBatch;
 
+        private float RadarLikeLine_X;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -101,6 +103,11 @@ namespace AirTrafficControl
             Textures = ContentLib.LoadStuff<Texture2D>(Content, TEXTURE_DIR);
             Shader = ContentLib.LoadStuff<Effect>(Content, SHADER_DIR);
 
+            Grid.Initialize();
+            Retro.Initialize(_rand);
+            PseudoRandom.Initialize(_graphics.GraphicsDevice);
+            //PseudoRandom.Draw(_graphics.GraphicsDevice, _spriteBatch); // Generate the random map
+
             _airports = AirportFactory.Factory(_rand, AIRPLANE_COUNT).ToList();
             _airplanes = new List<Airplane.Airplane>
             {
@@ -141,6 +148,12 @@ namespace AirTrafficControl
                     AirportFactory.Factory(_rand, AIRPLANE_COUNT).ToList();
             }
 
+            RadarLikeLine_X += (float) gameTime.ElapsedGameTime.TotalMilliseconds*0.5f;
+            if (RadarLikeLine_X > DisplayWidth+100)
+            {
+                RadarLikeLine_X = -100;
+            }
+
             Retro.Update(gameTime, _rand);
 
             _airplanes.ForEach(x => x.Update(gameTime));
@@ -157,26 +170,27 @@ namespace AirTrafficControl
         protected override void Draw(GameTime gameTime)
         {
             // Draw all stuff into a texture
+            GraphicsDevice.Clear(ClearColor);
             DrawScene(gameTime);
 
-            GraphicsDevice.Clear(ClearColor);
-
             Retro.Retrorize(_spriteBatch, _shadRenderTarget);
+
+            // Drawing the grid by my grid shader
+            Grid.Draw(_spriteBatch);
 
             base.Draw(gameTime);
         }
 
         private void DrawScene(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
             GraphicsDevice.SetRenderTarget(_shadRenderTarget);
-            GraphicsDevice.Clear(Color.Black);
-
-            // Drawing the grid by my grid shader
-            Grid.Draw(_spriteBatch);
-
+            GraphicsDevice.Clear(ClearColor);
+            
             _spriteBatch.Begin();
             {
+                _spriteBatch.Draw(PseudoRandom.Generated, new Rectangle(0, 0, DisplayWidth, DisplayHeight), Color.White);
+                _spriteBatch.Draw(Textures["Scannline"], new Rectangle((int)RadarLikeLine_X, 0, 100, DisplayHeight), Color.White);
+
                 // Clear the areas, where the airports will be
                 _airports.ForEach(x => x.DrawFilled(_spriteBatch, gameTime, ClearColor));
 

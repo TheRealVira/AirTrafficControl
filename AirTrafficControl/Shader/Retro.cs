@@ -23,19 +23,20 @@ namespace AirTrafficControl.Shader
 {
     internal static class Retro
     {
-        private static float RumbleTime;
-        private static float DontRumble;
-        private static bool Rumbleing;
+        public static void Initialize(Random rand)
+        {
+            _dontRumble = rand.Next(MIN_TIME_NOT_RUMBELING, MAX_TIME_NOT_RUMBELING);
+        }
+
+        private static float _rumbleTime;
+        private static float _dontRumble;
+        private static bool _rumbleing;
 
         public static void Retrorize(SpriteBatch spriteBatch, RenderTarget2D toRetrorize)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, Game1.Shader["Retro"]);
             {
-                for (var i = 0; i < Game1.Shader["Retro"].CurrentTechnique.Passes.Count; i++)
-                {
-                    Game1.Shader["Retro"].CurrentTechnique.Passes[i].Apply();
-                    spriteBatch.Draw(toRetrorize, new Rectangle(0, 0, DisplayWidth, DisplayHeight), Color.White);
-                }
+                spriteBatch.Draw(toRetrorize, new Rectangle(0, 0, DisplayWidth, DisplayHeight), Color.White);
             }
 
             spriteBatch.End();
@@ -43,45 +44,45 @@ namespace AirTrafficControl.Shader
 
         public static void Update(GameTime gameTime, Random rand)
         {
-            if (DontRumble <= 0)
+            if (_dontRumble <= 0)
             {
-                if (Rumbleing)
+                if (_rumbleing)
                 {
-                    RumbleTime -= (float) gameTime.ElapsedGameTime.TotalMilliseconds;
+                    _rumbleTime -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                 }
                 else
                 {
-                    Rumbleing = true;
-                    RumbleTime = rand.Next(MIN_TIME_RUMBELING, MAX_TIME_RUMBELING);
+                    _rumbleing = true;
+                    _rumbleTime = rand.Next(MIN_TIME_RUMBELING, MAX_TIME_RUMBELING);
 
-                    var rX = (rand.Next(0, 5) - 2)*
-                             (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var rY = (rand.Next(0, 5) - 2)*
-                             (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var r1X = (rand.Next(0, 5) - 2)*
-                              (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var r1Y = (rand.Next(0, 5) - 2)*
-                              (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var r2X = (rand.Next(0, 5) - 2)*
-                              (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var r2Y = (rand.Next(0, 5) - 2)*
-                              (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var rX = (rand.Next(0, 5) - 2) *
+                             (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var rY = (rand.Next(0, 5) - 2) *
+                             (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var r1X = (rand.Next(0, 5) - 2) *
+                              (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var r1Y = (rand.Next(0, 5) - 2) *
+                              (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var r2X = (rand.Next(0, 5) - 2) *
+                              (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var r2Y = (rand.Next(0, 5) - 2) *
+                              (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
 
                     Game1.Shader["Retro"].Parameters["RumbleVectorR"].SetValue(
-                        new Vector2(rX/DisplayWidth,
-                            rY/DisplayHeight));
+                        new Vector2(rX / DisplayWidth,
+                            rY / DisplayHeight));
                     Game1.Shader["Retro"].Parameters["RumbleVectorG"].SetValue(
-                        new Vector2(r1X/DisplayWidth,
-                            r1Y/DisplayHeight));
+                        new Vector2(r1X / DisplayWidth,
+                            r1Y / DisplayHeight));
                     Game1.Shader["Retro"].Parameters["RumbleVectorB"].SetValue(
-                        new Vector2(r2X/DisplayWidth,
-                            r2Y/DisplayHeight));
+                        new Vector2(r2X / DisplayWidth,
+                            r2Y / DisplayHeight));
                 }
 
-                if (RumbleTime <= 0)
+                if (_rumbleTime <= 0)
                 {
-                    Rumbleing = false;
-                    DontRumble = rand.Next(MIN_TIME_NOT_RUMBELING, MAX_TIME_NOT_RUMBELING);
+                    _rumbleing = false;
+                    _dontRumble = rand.Next(MIN_TIME_NOT_RUMBELING, MAX_TIME_NOT_RUMBELING);
                     Game1.Shader["Retro"].Parameters["RumbleVectorR"].SetValue(Vector2.Zero);
                     Game1.Shader["Retro"].Parameters["RumbleVectorG"].SetValue(Vector2.Zero);
                     Game1.Shader["Retro"].Parameters["RumbleVectorB"].SetValue(Vector2.Zero);
@@ -89,7 +90,7 @@ namespace AirTrafficControl.Shader
             }
             else
             {
-                DontRumble -= (float) gameTime.ElapsedGameTime.TotalMilliseconds;
+                _dontRumble -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             }
         }
     }

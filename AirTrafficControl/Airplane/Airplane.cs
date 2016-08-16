@@ -45,7 +45,7 @@ namespace AirTrafficControl.Airplane
 
         public void Update(GameTime gT)
         {
-            //_positon += _movement*(gT.ElapsedGameTime.Milliseconds/500f);
+            //_positon += _movement * (gT.ElapsedGameTime.Milliseconds / 500f);
             //UpdateBoundings();
         }
 

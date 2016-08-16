@@ -15,10 +15,11 @@ float2 RumbleVectorB;
 struct VertexShaderOutput
 {
 	float4 Position : TEXCOORD0;
+	float4 scr_pos : TEXCOORD1;
 	float4 Color : COLOR0;
 };
 
-float4 MainPS(VertexShaderOutput input) : COLOR
+float4 RumblePS(VertexShaderOutput input) : COLOR
 {
 	float3 colorR = tex2D(TextureSampler, input.Position + RumbleVectorR);
 	float3 colorG = tex2D(TextureSampler, input.Position + RumbleVectorG);
@@ -29,13 +30,14 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	returnColor.g = colorG.g;
 	returnColor.b = colorB.b;
 	returnColor.a = 1.0f;
+
 	return returnColor;
-}
+};
 
 technique RetroDrawing
 {
 	pass P0
 	{
-		PixelShader = compile PS_SHADERMODEL MainPS();
+		PixelShader = compile PS_SHADERMODEL RumblePS();
 	}
 };

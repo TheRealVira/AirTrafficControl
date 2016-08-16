@@ -48,6 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Airport\Airport.cs" />
     <Compile Include="Airport\AirportFactory.cs" />
+    <Compile Include="Shader\PseudoRandom.cs" />
     <Compile Include="Shader\Retro.cs" />
   </ItemGroup>
   <ItemGroup>
