@@ -13,6 +13,8 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -26,5 +28,8 @@ namespace AirTrafficControl
             => newK.IsKeyUp(key) && oldK.IsKeyDown(key);
 
         public static float VectorToAngle(this Vector2 position) => (float) Math.Atan2(position.Y, position.X);
+
+        public static T RandomItem<T>(this IList<T> items, Random rand)
+            => items == null || rand == null ? default(T) : items[rand.Next(0, items.Count)];
     }
 }

@@ -36,6 +36,7 @@ namespace AirTrafficControl.Shader
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, Game1.Shader["Retro"]);
             {
+                Game1.Shader["Retro"].CurrentTechnique.Passes[0].Apply();
                 spriteBatch.Draw(toRetrorize, new Rectangle(0, 0, DisplayWidth, DisplayHeight), Color.White);
             }
 

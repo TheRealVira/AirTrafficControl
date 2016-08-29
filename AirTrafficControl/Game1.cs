@@ -41,8 +41,8 @@ namespace AirTrafficControl
         public static Dictionary<string, Texture2D> Textures;
         public static Dictionary<string, Effect> Shader;
         private readonly GraphicsDeviceManager _graphics;
-        private List<Airplane.Airplane> _airplanes;
-        private List<Airport.Airport> _airports;
+        public static List<Airplane.Airplane> Airplanes;
+        public static List<Airport.Airport> Airports;
         private RenderTarget2D _shadRenderTarget;
         private SpriteBatch _spriteBatch;
 
@@ -108,11 +108,8 @@ namespace AirTrafficControl
             PseudoRandom.Initialize(_graphics.GraphicsDevice);
             //PseudoRandom.Draw(_graphics.GraphicsDevice, _spriteBatch); // Generate the random map
 
-            _airports = AirportFactory.Factory(_rand, AIRPLANE_COUNT).ToList();
-            _airplanes = new List<Airplane.Airplane>
-            {
-                new Airplane.Airplane("Tester101", _airports[0]._boundings.Center.ToVector2(), new Vector2(50, 50))
-            };
+            Airports = TheAirportFactory.Factorize(_rand, AIRPORT_COUNT).ToList();
+            Airplanes = TheAirplaneFactory.Factorize(_rand, 1).ToList();
         }
 
         /// <summary>
@@ -143,9 +140,9 @@ namespace AirTrafficControl
 
             if (NewKeyboardState.KeyWasPressed(OldKeyboardState, Keys.R))
             {
-                _airports.Clear();
-                _airports =
-                    AirportFactory.Factory(_rand, AIRPLANE_COUNT).ToList();
+                Airports.Clear();
+                Airports =
+                    TheAirportFactory.Factorize(_rand, AIRPORT_COUNT).ToList();
             }
 
             RadarLikeLine_X += (float) gameTime.ElapsedGameTime.TotalMilliseconds*0.5f;
@@ -156,7 +153,15 @@ namespace AirTrafficControl
 
             Retro.Update(gameTime, _rand);
 
-            _airplanes.ForEach(x => x.Update(gameTime));
+            for (int i = Airplanes.Count-1; i >-1; i--)
+            {
+                Airplanes[i].Update(gameTime);
+            }
+
+            if (Airplanes.Count < AIRPLANE_COUNT)
+            {
+                Airplanes.AddRange(TheAirplaneFactory.Factorize(_rand,1));
+            }
 
             OldMouseState = NewMouseState;
             OldKeyboardState = NewKeyboardState;
@@ -188,17 +193,17 @@ namespace AirTrafficControl
             
             _spriteBatch.Begin();
             {
-                _spriteBatch.Draw(PseudoRandom.Generated, new Rectangle(0, 0, DisplayWidth, DisplayHeight), Color.White);
+                //_spriteBatch.Draw(PseudoRandom.Generated, new Rectangle(0, 0, DisplayWidth, DisplayHeight), Color.White);
                 _spriteBatch.Draw(Textures["Scannline"], new Rectangle((int)RadarLikeLine_X, 0, 100, DisplayHeight), Color.White);
 
                 // Clear the areas, where the airports will be
-                _airports.ForEach(x => x.DrawFilled(_spriteBatch, gameTime, ClearColor));
+                Airports.ForEach(x => x.DrawFilled(_spriteBatch, gameTime, ClearColor));
 
                 // Draw the airports
-                _airports.ForEach(x => x.Draw(_spriteBatch, gameTime, Color.White));
+                Airports.ForEach(x => x.Draw(_spriteBatch, gameTime, Color.White));
 
                 // Draw the airplanes, which are intersecting any airports
-                _airplanes.Where(x => _airports.Any(ap => ap._boundings.Intersects(x.Boundings)))
+                Airplanes.Where(x => Airports.Any(ap => ap._boundings.Intersects(x.Boundings)))
                     .AsParallel()
                     .ForAll(x => x.Draw(_spriteBatch));
             }

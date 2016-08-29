@@ -20,7 +20,7 @@ using Microsoft.Xna.Framework;
 
 namespace AirTrafficControl.Airport
 {
-    internal static class AirportFactory
+    public class AirportFactory:IFactory<Airport>
     {
         private static readonly string[] CoolNames =
         {
@@ -39,16 +39,21 @@ namespace AirTrafficControl.Airport
             "Euroradar CAPTOR"
         };
 
-        public static IEnumerable<Airport> Factory(Random rand, int count)
+        public IEnumerable<Airport> Factorize(Random rand, int count)
         {
+            if (rand == null)
+            {
+                yield break; // Fast breakout, before something else breaks...
+            }
+
             for (var i = 0; i < count; i++)
             {
                 yield return
-                    new Airport(CoolNames[rand.Next(0, CoolNames.Length)],
+                    new Airport(CoolNames.RandomItem(rand),
                         new Vector2(
-                            rand.Next((int) Constants.MIN_RAD, (int) (Constants.DisplayWidth - Constants.MAX_RAD)),
-                            rand.Next((int) Constants.MIN_RAD, (int) (Constants.DisplayHeight - Constants.MAX_RAD))),
-                        rand.Next((int) Constants.MIN_RAD, (int) Constants.MAX_RAD));
+                            rand.Next((int)Constants.MIN_RAD, (int)(Constants.DisplayWidth - Constants.MAX_RAD)),
+                            rand.Next((int)Constants.MIN_RAD, (int)(Constants.DisplayHeight - Constants.MAX_RAD))),
+                        rand.Next((int)Constants.MIN_RAD, (int)Constants.MAX_RAD));
             }
         }
     }

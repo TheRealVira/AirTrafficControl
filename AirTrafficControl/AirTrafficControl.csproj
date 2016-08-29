@@ -39,9 +39,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Airplane\Airplane.cs" />
+    <Compile Include="Airplane\AirplaneFactory.cs" />
+    <Compile Include="Circle.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Content\ContentLib.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Factory.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Shader\Grid.cs" />
     <Compile Include="Program.cs" />

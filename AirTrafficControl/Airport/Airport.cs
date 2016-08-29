@@ -19,9 +19,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace AirTrafficControl.Airport
 {
-    internal class Airport
+    public class Airport
     {
-        public readonly Rectangle _boundings;
+        public readonly Circle _boundings;
+        public readonly Circle _innerBoundings;
+        private readonly Rectangle DrawRectangle;
         private readonly Vector2 _position;
         private readonly string _radarName;
         private readonly float _radius;
@@ -32,9 +34,13 @@ namespace AirTrafficControl.Airport
             _position = position;
             _radius = radius;
 
-            var divB2 = _radius/2;
-            _boundings = new Rectangle((int) (_position.X - divB2), (int) (_position.Y - divB2),
-                (int) _radius, (int) _radius);
+            var divB2 = radius/2;
+            DrawRectangle = new Rectangle((int)(_position.X - divB2), (int)(_position.Y - divB2),
+                (int)_radius, (int)_radius);
+
+            _boundings = new Circle(position.X,position.Y,radius*.3f);
+
+            _innerBoundings= new Circle(position.X, position.Y, radius/10);
         }
 
         public override string ToString()
@@ -44,15 +50,14 @@ namespace AirTrafficControl.Airport
 
         public void Draw(SpriteBatch drawing, GameTime gameTime, Color color)
         {
-            drawing.Draw(Game1.Textures["Radar"], _boundings, color);
+            drawing.Draw(Game1.Textures["Radar"], DrawRectangle, color);
         }
 
         public void DrawFilled(SpriteBatch drawing, GameTime gameTime, Color color)
         {
-            drawing.Draw(Game1.Textures["FilledRadar"], _boundings, color);
+            drawing.Draw(Game1.Textures["FilledRadar"], DrawRectangle, color);
         }
-
-        public bool Contains(Vector2 point) => _boundings.Contains(point);
-        public bool Contains(Rectangle bounds) => _boundings.Contains(bounds);
+        
+        public bool Contains(Rectangle bounds) => _boundings.Intersects(bounds);
     }
 }

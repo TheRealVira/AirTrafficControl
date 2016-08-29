@@ -12,6 +12,8 @@
 
 #region Usings
 
+using AirTrafficControl.Airplane;
+using AirTrafficControl.Airport;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -25,7 +27,11 @@ namespace AirTrafficControl
         public const string SHADER_DIR = "Shader";
         public const float MAX_RAD = 500f;
         public const float MIN_RAD = 250f;
-        public const int AIRPLANE_COUNT = 2;
+        public const int AIRPLANE_COUNT = 3;
+        public const int AIRPORT_COUNT = 2;
+        public const float DEFAULT_SPEED = 50;
+        public const float SPEED_LOSS = .999f;
+        public const float MIN_SPEED = 20;
         public const RenderTarget2D DEFAULT_TARGET = null; // A bit cheaty, but who the hell cares :P
 
         // Constants for the Retro-Shader
@@ -38,5 +44,10 @@ namespace AirTrafficControl
         public static int DisplayWidth;
         public static int DisplayHeight;
         public static Color ClearColor;
+        //public static readonly Vector2 DefaultMovementSpeed = new Vector2(50, 50);
+
+        // Factories:
+        public static readonly AirplaneFactory TheAirplaneFactory=new AirplaneFactory();
+        public static readonly AirportFactory TheAirportFactory = new AirportFactory();
     }
 }

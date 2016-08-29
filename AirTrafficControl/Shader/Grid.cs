@@ -37,6 +37,7 @@ namespace AirTrafficControl.Shader
         {
             sp.Begin(SpriteSortMode.Deferred, null, null, null, null, Game1.Shader["Grid"]);
             {
+                Game1.Shader["Grid"].CurrentTechnique.Passes[0].Apply();
                 sp.Draw(Game1.CoolPixle2016, new Rectangle(0, 0, Constants.DisplayWidth, Constants.DisplayHeight),
                     Color.Transparent);
             }
