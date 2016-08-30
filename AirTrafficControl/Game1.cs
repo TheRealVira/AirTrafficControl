@@ -5,8 +5,8 @@
 // Solution: AirTrafficControl
 // Project: AirTrafficControl
 // Filename: Game1.cs
-// Date - created:2016.08.15 - 14:25
-// Date - current: 2016.08.30 - 16:56
+// Date - created:2016.08.30 - 17:04
+// Date - current: 2016.08.30 - 19:00
 
 #endregion
 
@@ -231,7 +231,7 @@ namespace AirTrafficControl
                         continue;
                     }
 
-                    var corners = Airplanes[i].Corners;
+                    var corners = Airplanes[i].Boundings.Corners;
                     for (var j = 0; j < corners.Length; j++)
                     {
                         var shouldbreak = false;
@@ -240,7 +240,7 @@ namespace AirTrafficControl
                             if (Airports[k]._boundings.ContainsPoint(corners[j].ToPoint()))
                             {
                                 Airplanes[i].FadeOut = false;
-                                Airplanes[i]._alpha = 1f;
+                                Airplanes[i].Alpha = 1f;
                                 Airplanes[i].Draw(_spriteBatch);
                                 shouldbreak = true;
                                 Airplanes[i].Seen();
@@ -262,7 +262,7 @@ namespace AirTrafficControl
                         }
                     }
                 }
-                //Airplanes.Where(x => x.Landed || Airports.Any(ap => x.Corners.Any(corner => radarLikeRect.Contains(corner) ||ap._boundings.ContainsPoint(corner.ToPoint()))))
+                //Airplanes.Where(x => x.Landed || Airports.Any(ap => x.Corners.Any(corner => radarLikeRect.Contains(corner) ||ap.Boundings.ContainsPoint(corner.ToPoint()))))
                 //    .AsParallel()
                 //    .ForAll(x => x.Draw(_spriteBatch));
 

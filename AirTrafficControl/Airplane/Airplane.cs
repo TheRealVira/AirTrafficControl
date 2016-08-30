@@ -5,8 +5,8 @@
 // Solution: AirTrafficControl
 // Project: AirTrafficControl
 // Filename: Airplane.cs
-// Date - created:2016.08.15 - 17:43
-// Date - current: 2016.08.30 - 16:56
+// Date - created:2016.08.30 - 17:04
+// Date - current: 2016.08.30 - 18:59
 
 #endregion
 
@@ -22,66 +22,38 @@ namespace AirTrafficControl.Airplane
 {
     public class Airplane
     {
-        private readonly float _angle;
-
         private readonly Airport.Airport _goal;
         private readonly string _name;
         private readonly Vector2 _targetVector;
-
-        public float _alpha = 1f;
-        private Rectangle _boundings;
-        private Vector2 _movement;
-        private Vector2 _positon;
         private float _speed;
+
+        public float Alpha = 1f;
         public bool FadeOut;
 
         public Airplane(string name, Vector2 position, Airport.Airport goal)
         {
             _name = name;
-            _positon = position;
 
-            var targetVector = goal._boundings.ToVector2() - position; // Getting raw vector
-
-            // Calculating the angle:
-            _angle = (float) ((float) Math.Atan2(targetVector.Y, targetVector.X) + Math.PI/2f);
-
-            targetVector.Normalize(); // Normalizing the raw vector (notice here, that we'll get some loss of precision)
-            targetVector *= Constants.DEFAULT_SPEED; // Multiplying the normalized vector by my speedy constant.
-
-            _movement = targetVector;
-            UpdateBoundings();
-
-            var goalVector = goal._boundings.ToVector2();
-            _targetVector = goalVector - position; // Getting raw vector
+            _targetVector = goal._boundings.ToVector2() -
+                            new Vector2(position.X + Constants.AIRPLANE_WIDTH/2f,
+                                position.Y + Constants.AIRPLANE_HEIGHT/2f); // Getting raw vector
             _targetVector.Normalize();
+                // Normalizing the raw vector (notice here, that we'll get some loss of precision)
+
+            Boundings = new AdvancedRectangle(position.X, position.Y, Constants.AIRPLANE_WIDTH,
+                Constants.AIRPLANE_HEIGHT, (float) (Math.Atan2(_targetVector.Y, _targetVector.X) + Math.PI/2));
 
             _goal = goal;
 
             _speed = Constants.DEFAULT_SPEED;
-
-            //_angle = 0;
+            Landed = false;
         }
 
         public bool BeenSeen { get; private set; }
 
         public bool Landed { get; private set; }
 
-        // TopLeft
-        // TopRight
-        // BottomRight
-        // BottomLeft
-        public Vector2[] Corners
-            =>
-                new[]
-                {
-                    new Vector2(_boundings.X, _boundings.Y).Rotate(_angle, _boundings.Center.ToVector2()),
-                    new Vector2(_boundings.X + _boundings.Width, _boundings.Y).Rotate(_angle,
-                        _boundings.Center.ToVector2()),
-                    new Vector2(_boundings.X + _boundings.Width, _boundings.Y + _boundings.Height).Rotate(_angle,
-                        _boundings.Center.ToVector2()),
-                    new Vector2(_boundings.X, _boundings.Y + _boundings.Height).Rotate(_angle,
-                        _boundings.Center.ToVector2())
-                };
+        public AdvancedRectangle Boundings { get; private set; }
 
         public void Seen()
         {
@@ -91,19 +63,21 @@ namespace AirTrafficControl.Airplane
         public void Draw(SpriteBatch sp)
         {
             sp.Draw(Game1.Textures["Airplane"],
-                new Rectangle(_boundings.X + _boundings.Width/2, _boundings.Y + _boundings.Height/2, _boundings.Width,
-                    _boundings.Height), null, Color.White*_alpha, _angle,
+                new Rectangle((int) (Boundings.Position.X + Boundings.Width/2),
+                    (int) (Boundings.Position.Y + Boundings.Height/2), (int) Boundings.Width,
+                    (int) Boundings.Height), null, Color.White*Alpha, Boundings.Angle,
                 Game1.Textures["Airplane"].Bounds.Center.ToVector2(), SpriteEffects.None, 0f);
 
             var offset = Game1.Fonts["Airplane"].MeasureString(ToString());
             sp.Draw(Game1.CoolPixle2016,
-                new Rectangle((int) (_boundings.X - offset.X/2) - 3, _boundings.Y + _boundings.Height - 3,
-                    (int) (offset.X + 6), (int) (offset.Y + 3)), Color.Black*_alpha);
+                new Rectangle((int) (Boundings.Position.X - offset.X/2) - 3,
+                    (int) (Boundings.Position.Y + Boundings.Height - 3),
+                    (int) (offset.X + 6), (int) (offset.Y + 3)), Color.Black*Alpha);
             sp.DrawString(Game1.Fonts["Airplane"], ToString(),
-                new Vector2(_boundings.X - offset.X/2, _boundings.Y + _boundings.Height), Color.Red*_alpha);
+                new Vector2(Boundings.Position.X - offset.X/2, Boundings.Position.Y + Boundings.Height), Color.Red*Alpha);
 
 #if(DEBUG)
-            var corners = Corners;
+            var corners = Boundings.Corners;
             for (int i = 0; i < corners.Length; i++)
             {
                 sp.Draw(Game1.CoolPixle2016, new Rectangle((int)(corners[i].X - 1), (int)(corners[i].Y - 1), 3, 3), Color.Red);
@@ -117,10 +91,16 @@ namespace AirTrafficControl.Airplane
 
             if (Landed)
             {
-                _alpha -= (float) gT.ElapsedGameTime.TotalMilliseconds*
-                          Constants.DISSOLVING_SPEED_OF_THE_AIRPLANE_WHEN_IN_GOAL;
+                Alpha -= (float) gT.ElapsedGameTime.TotalMilliseconds*
+                         Constants.DISSOLVING_SPEED_OF_THE_AIRPLANE_WHEN_IN_GOAL;
 
-                if (_alpha < 0)
+                Boundings =
+                    new AdvancedRectangle(
+                        Boundings.Position + _targetVector*_speed*(gT.ElapsedGameTime.Milliseconds/500f)*Alpha,
+                        Boundings.Width,
+                        Boundings.Height, Boundings.Angle);
+
+                if (Alpha < 0)
                 {
                     Game1.Airplanes.Remove(this);
                 }
@@ -134,45 +114,44 @@ namespace AirTrafficControl.Airplane
 
             if (FadeOut)
             {
-                _alpha -= (float) gT.ElapsedGameTime.TotalMilliseconds*
-                          Constants.DISSOLVING_SPEED_OF_THE_AIRPLANE_WHEN_RADAR;
+                Alpha -= (float) gT.ElapsedGameTime.TotalMilliseconds*
+                         Constants.DISSOLVING_SPEED_OF_THE_AIRPLANE_WHEN_RADAR;
 
-                if (_alpha < 0)
+                if (Alpha < 0)
                 {
                     FadeOut = false;
-                    _alpha = 1f;
+                    Alpha = 1f;
                 }
             }
 
             #endregion
 
-            _positon += _movement*(gT.ElapsedGameTime.Milliseconds/500f);
-            UpdateBoundings();
-
-            _movement = _targetVector*_speed;
+            Boundings =
+                new AdvancedRectangle(
+                    Boundings.Position + _targetVector*(gT.ElapsedGameTime.Milliseconds/500f)*_speed, Boundings.Width,
+                    Boundings.Height, Boundings.Angle);
 
             _speed = _speed <= Constants.MIN_SPEED ? Constants.MIN_SPEED : _speed*Constants.SPEED_LOSS;
 
-            var corners = Corners;
-            for (var i = 0; i < corners.Length; i++)
+            if (Boundings.ContainsPoint(_goal._innerBoundings.ToVector2()))
             {
-                if (_goal._innerBoundings.ContainsPoint(corners[i].ToPoint())) // We got to the goal!
-                {
-                    Landed = true;
-                }
+                Landed = true;
             }
 
-            if (_positon.X < 0 || _positon.X > Constants.DisplayWidth || _positon.Y < 0 ||
-                _positon.Y > Constants.DisplayHeight)
+            //var corners = Corners;
+            //for (var i = 0; i < corners.Length; i++)
+            //{
+            //    if (_goal._innerBoundings.ContainsPoint(corners[i].ToPoint())) // We got to the goal!
+            //    {
+            //        Landed = true;
+            //    }
+            //}
+
+            if (Boundings.Position.X < 0 || Boundings.Position.X > Constants.DisplayWidth || Boundings.Position.Y < 0 ||
+                Boundings.Position.Y > Constants.DisplayHeight)
             {
                 Game1.Airplanes.Remove(this);
             }
-        }
-
-        private void UpdateBoundings()
-        {
-            _boundings = new Rectangle((int) (_positon.X - 25),
-                (int) (_positon.Y - 50), 50, 100);
         }
 
 
