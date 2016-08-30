@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Constants.cs
 // Date - created:2016.08.15 - 14:34
-// Date - current: 2016.08.30 - 12:58
+// Date - current: 2016.08.30 - 16:56
 
 #endregion
 
@@ -29,7 +29,7 @@ namespace AirTrafficControl
 
         public const float MAX_RAD = 500f;
         public const float MIN_RAD = 250f;
-        public const int AIRPLANE_COUNT = 30;
+        public const int AIRPLANE_COUNT = 10;
         public const int AIRPORT_COUNT = 3;
         public const float DEFAULT_SPEED = 50;
         public const float SPEED_LOSS = .999f;

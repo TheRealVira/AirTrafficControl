@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Airplane.cs
 // Date - created:2016.08.15 - 17:43
-// Date - current: 2016.08.30 - 12:57
+// Date - current: 2016.08.30 - 16:56
 
 #endregion
 
@@ -23,6 +23,7 @@ namespace AirTrafficControl.Airplane
     public class Airplane
     {
         private readonly float _angle;
+
         private readonly Airport.Airport _goal;
         private readonly string _name;
         private readonly Vector2 _targetVector;
@@ -57,6 +58,8 @@ namespace AirTrafficControl.Airplane
             _goal = goal;
 
             _speed = Constants.DEFAULT_SPEED;
+
+            //_angle = 0;
         }
 
         public bool BeenSeen { get; private set; }
@@ -87,8 +90,10 @@ namespace AirTrafficControl.Airplane
 
         public void Draw(SpriteBatch sp)
         {
-            sp.Draw(Game1.Textures["Airplane"], _boundings, null, Color.White*_alpha, _angle,
-                Game1.Textures["Airplane"].Bounds.Center.ToVector2(), SpriteEffects.None, 0);
+            sp.Draw(Game1.Textures["Airplane"],
+                new Rectangle(_boundings.X + _boundings.Width/2, _boundings.Y + _boundings.Height/2, _boundings.Width,
+                    _boundings.Height), null, Color.White*_alpha, _angle,
+                Game1.Textures["Airplane"].Bounds.Center.ToVector2(), SpriteEffects.None, 0f);
 
             var offset = Game1.Fonts["Airplane"].MeasureString(ToString());
             sp.Draw(Game1.CoolPixle2016,

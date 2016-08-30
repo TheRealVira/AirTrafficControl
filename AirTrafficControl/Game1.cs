@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Game1.cs
 // Date - created:2016.08.15 - 14:25
-// Date - current: 2016.08.30 - 12:58
+// Date - current: 2016.08.30 - 16:56
 
 #endregion
 
@@ -222,6 +222,11 @@ namespace AirTrafficControl
                 {
                     if (Airplanes[i].FadeOut || Airplanes[i].Landed)
                     {
+                        if (Airplanes[i].Landed)
+                        {
+                            Airplanes[i].FadeOut = false;
+                        }
+
                         Airplanes[i].Draw(_spriteBatch);
                         continue;
                     }
@@ -229,7 +234,7 @@ namespace AirTrafficControl
                     var corners = Airplanes[i].Corners;
                     for (var j = 0; j < corners.Length; j++)
                     {
-                        var shouldContinue = false;
+                        var shouldbreak = false;
                         for (var k = 0; k < Airports.Count; k++)
                         {
                             if (Airports[k]._boundings.ContainsPoint(corners[j].ToPoint()))
@@ -237,15 +242,15 @@ namespace AirTrafficControl
                                 Airplanes[i].FadeOut = false;
                                 Airplanes[i]._alpha = 1f;
                                 Airplanes[i].Draw(_spriteBatch);
-                                shouldContinue = true;
+                                shouldbreak = true;
                                 Airplanes[i].Seen();
                                 break;
                             }
                         }
 
-                        if (shouldContinue)
+                        if (shouldbreak)
                         {
-                            continue;
+                            break;
                         }
 
                         if (radarLikeRect.Contains(corners[j]))
