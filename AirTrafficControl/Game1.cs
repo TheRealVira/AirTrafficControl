@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Game1.cs
 // Date - created:2016.08.15 - 14:25
-// Date - current: 2016.08.16 - 13:12
+// Date - current: 2016.08.30 - 12:58
 
 #endregion
 
@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AirTrafficControl.Airport;
 using AirTrafficControl.Content;
 using AirTrafficControl.Shader;
 using Microsoft.Xna.Framework;
@@ -40,9 +39,11 @@ namespace AirTrafficControl
 
         public static Dictionary<string, Texture2D> Textures;
         public static Dictionary<string, Effect> Shader;
-        private readonly GraphicsDeviceManager _graphics;
+        public static Dictionary<string, SpriteFont> Fonts;
         public static List<Airplane.Airplane> Airplanes;
         public static List<Airport.Airport> Airports;
+
+        private readonly GraphicsDeviceManager _graphics;
         private RenderTarget2D _shadRenderTarget;
         private SpriteBatch _spriteBatch;
 
@@ -102,11 +103,12 @@ namespace AirTrafficControl
 
             Textures = ContentLib.LoadStuff<Texture2D>(Content, TEXTURE_DIR);
             Shader = ContentLib.LoadStuff<Effect>(Content, SHADER_DIR);
+            Fonts = ContentLib.LoadStuff<SpriteFont>(Content, FONTS_DIR);
 
             Grid.Initialize();
             Retro.Initialize(_rand);
             PseudoRandom.Initialize(_graphics.GraphicsDevice);
-            //PseudoRandom.Draw(_graphics.GraphicsDevice, _spriteBatch); // Generate the random map
+            PseudoRandom.Draw(_graphics.GraphicsDevice, _spriteBatch, _rand); // Generate the random map
 
             Airports = TheAirportFactory.Factorize(_rand, AIRPORT_COUNT).ToList();
             Airplanes = TheAirplaneFactory.Factorize(_rand, 1).ToList();
@@ -143,24 +145,26 @@ namespace AirTrafficControl
                 Airports.Clear();
                 Airports =
                     TheAirportFactory.Factorize(_rand, AIRPORT_COUNT).ToList();
+
+                Airplanes.Clear();
             }
 
             RadarLikeLine_X += (float) gameTime.ElapsedGameTime.TotalMilliseconds*0.5f;
-            if (RadarLikeLine_X > DisplayWidth+100)
+            if (RadarLikeLine_X > DisplayWidth + 100)
             {
                 RadarLikeLine_X = -100;
             }
 
             Retro.Update(gameTime, _rand);
 
-            for (int i = Airplanes.Count-1; i >-1; i--)
+            for (var i = Airplanes.Count - 1; i > -1; i--)
             {
                 Airplanes[i].Update(gameTime);
             }
 
             if (Airplanes.Count < AIRPLANE_COUNT)
             {
-                Airplanes.AddRange(TheAirplaneFactory.Factorize(_rand,1));
+                Airplanes.AddRange(TheAirplaneFactory.Factorize(_rand, 1));
             }
 
             OldMouseState = NewMouseState;
@@ -190,11 +194,16 @@ namespace AirTrafficControl
         {
             GraphicsDevice.SetRenderTarget(_shadRenderTarget);
             GraphicsDevice.Clear(ClearColor);
-            
+
             _spriteBatch.Begin();
             {
+                var radarLikeRect = new Rectangle((int) RadarLikeLine_X, 0, 100, DisplayHeight);
+
+                _spriteBatch.Draw(PseudoRandom.Generated, new Rectangle(0, 0, DisplayWidth, DisplayHeight),
+                    Color.DarkOliveGreen);
+
                 //_spriteBatch.Draw(PseudoRandom.Generated, new Rectangle(0, 0, DisplayWidth, DisplayHeight), Color.White);
-                _spriteBatch.Draw(Textures["Scannline"], new Rectangle((int)RadarLikeLine_X, 0, 100, DisplayHeight), Color.White);
+                _spriteBatch.Draw(Textures["Scannline"], radarLikeRect, Color.White);
 
                 // Clear the areas, where the airports will be
                 Airports.ForEach(x => x.DrawFilled(_spriteBatch, gameTime, ClearColor));
@@ -202,10 +211,91 @@ namespace AirTrafficControl
                 // Draw the airports
                 Airports.ForEach(x => x.Draw(_spriteBatch, gameTime, Color.White));
 
+                // Draw the string of the airports
+                for (var i = 0; i < Airports.Count; i++)
+                {
+                    Airports[i].DrawString(_spriteBatch);
+                }
+
                 // Draw the airplanes, which are intersecting any airports
-                Airplanes.Where(x => Airports.Any(ap => ap._boundings.Intersects(x.Boundings)))
-                    .AsParallel()
-                    .ForAll(x => x.Draw(_spriteBatch));
+                for (var i = 0; i < Airplanes.Count; i++)
+                {
+                    if (Airplanes[i].FadeOut || Airplanes[i].Landed)
+                    {
+                        Airplanes[i].Draw(_spriteBatch);
+                        continue;
+                    }
+
+                    var corners = Airplanes[i].Corners;
+                    for (var j = 0; j < corners.Length; j++)
+                    {
+                        var shouldContinue = false;
+                        for (var k = 0; k < Airports.Count; k++)
+                        {
+                            if (Airports[k]._boundings.ContainsPoint(corners[j].ToPoint()))
+                            {
+                                Airplanes[i].FadeOut = false;
+                                Airplanes[i]._alpha = 1f;
+                                Airplanes[i].Draw(_spriteBatch);
+                                shouldContinue = true;
+                                Airplanes[i].Seen();
+                                break;
+                            }
+                        }
+
+                        if (shouldContinue)
+                        {
+                            continue;
+                        }
+
+                        if (radarLikeRect.Contains(corners[j]))
+                        {
+                            Airplanes[i].FadeOut = true;
+                            Airplanes[i].Draw(_spriteBatch);
+                            Airplanes[i].Seen();
+                            break;
+                        }
+                    }
+                }
+                //Airplanes.Where(x => x.Landed || Airports.Any(ap => x.Corners.Any(corner => radarLikeRect.Contains(corner) ||ap._boundings.ContainsPoint(corner.ToPoint()))))
+                //    .AsParallel()
+                //    .ForAll(x => x.Draw(_spriteBatch));
+
+                var seenAirplanes = new List<string>();
+                var landedAirplanes = new List<string>();
+                for (var i = 0; i < Airplanes.Count; i++)
+                {
+                    if (Airplanes[i].Landed)
+                    {
+                        landedAirplanes.Add(Airplanes[i].ToString());
+                    }
+
+                    if (Airplanes[i].BeenSeen)
+                    {
+                        seenAirplanes.Add(Airplanes[i].ToString());
+                    }
+                }
+
+                var height = Fonts["Airplane"].MeasureString("W").Y;
+                _spriteBatch.DrawString(Fonts["Airplane"], "Seen:", new Vector2(0, height), Color.White);
+                for (var i = 0; i < seenAirplanes.Count; i++)
+                {
+                    _spriteBatch.DrawString(Fonts["Airplane"], seenAirplanes[i], new Vector2(0, i*height + 3*height),
+                        Color.White);
+                }
+
+                _spriteBatch.DrawString(Fonts["Airplane"], "Landed:", new Vector2(DisplayWidth - 100, height),
+                    Color.White);
+                for (var i = 0; i < landedAirplanes.Count; i++)
+                {
+                    _spriteBatch.DrawString(Fonts["Airplane"], landedAirplanes[i],
+                        new Vector2(DisplayWidth - Fonts["Airplane"].MeasureString(landedAirplanes[i]).X - 3,
+                            i*height + 3*height), Color.White);
+                }
+
+#if (DEBUG)
+                Airports.ForEach(x=>x.DebugDraw(_spriteBatch));
+#endif
             }
             _spriteBatch.End();
 

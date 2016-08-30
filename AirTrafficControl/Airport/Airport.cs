@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Airport.cs
 // Date - created:2016.08.15 - 14:32
-// Date - current: 2016.08.16 - 13:12
+// Date - current: 2016.08.30 - 12:58
 
 #endregion
 
@@ -35,12 +35,12 @@ namespace AirTrafficControl.Airport
             _radius = radius;
 
             var divB2 = radius/2;
-            DrawRectangle = new Rectangle((int)(_position.X - divB2), (int)(_position.Y - divB2),
-                (int)_radius, (int)_radius);
+            DrawRectangle = new Rectangle((int) (_position.X - divB2), (int) (_position.Y - divB2),
+                (int) _radius, (int) _radius);
 
-            _boundings = new Circle(position.X,position.Y,radius*.3f);
+            _boundings = new Circle(position.X, position.Y, radius/2);
 
-            _innerBoundings= new Circle(position.X, position.Y, radius/10);
+            _innerBoundings = new Circle(position.X, position.Y, radius/12);
         }
 
         public override string ToString()
@@ -57,7 +57,24 @@ namespace AirTrafficControl.Airport
         {
             drawing.Draw(Game1.Textures["FilledRadar"], DrawRectangle, color);
         }
-        
+
+#if (DEBUG)
+        public void DebugDraw(SpriteBatch sp)
+        {
+            sp.Draw(Game1.CoolPixle2016, new Rectangle((int)_innerBoundings.X - 1, (int)_innerBoundings.Y - 1, 3, 3), Color.Red);
+        }
+#endif
+
+        public void DrawString(SpriteBatch sp)
+        {
+            var offset = Game1.Fonts["Radar"].MeasureString(ToString());
+            sp.Draw(Game1.CoolPixle2016,
+                new Rectangle((int) (_boundings.X - offset.X/2) - 3, (int) (_boundings.Y + _boundings.Radius) - 3,
+                    (int) (offset.X + 6), (int) (offset.Y + 3)), Color.Black*.5f);
+            sp.DrawString(Game1.Fonts["Radar"], ToString(),
+                new Vector2(_boundings.X - offset.X/2, _boundings.Y + _boundings.Radius), Color.Red);
+        }
+
         public bool Contains(Rectangle bounds) => _boundings.Intersects(bounds);
     }
 }

@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: AirportFactory.cs
 // Date - created:2016.08.15 - 14:32
-// Date - current: 2016.08.16 - 13:12
+// Date - current: 2016.08.30 - 12:58
 
 #endregion
 
@@ -20,7 +20,7 @@ using Microsoft.Xna.Framework;
 
 namespace AirTrafficControl.Airport
 {
-    public class AirportFactory:IFactory<Airport>
+    public class AirportFactory : IFactory<Airport>
     {
         private static readonly string[] CoolNames =
         {
@@ -51,9 +51,9 @@ namespace AirTrafficControl.Airport
                 yield return
                     new Airport(CoolNames.RandomItem(rand),
                         new Vector2(
-                            rand.Next((int)Constants.MIN_RAD, (int)(Constants.DisplayWidth - Constants.MAX_RAD)),
-                            rand.Next((int)Constants.MIN_RAD, (int)(Constants.DisplayHeight - Constants.MAX_RAD))),
-                        rand.Next((int)Constants.MIN_RAD, (int)Constants.MAX_RAD));
+                            rand.Next((int) Constants.MIN_RAD, (int) (Constants.DisplayWidth - Constants.MAX_RAD)),
+                            rand.Next((int) Constants.MIN_RAD, (int) (Constants.DisplayHeight - Constants.MAX_RAD))),
+                        rand.Next((int) Constants.MIN_RAD, (int) Constants.MAX_RAD));
             }
         }
     }

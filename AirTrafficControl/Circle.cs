@@ -1,6 +1,20 @@
-﻿
-using System.Linq;
+﻿#region License
+
+// Copyright (c) 2016, Vira
+// All rights reserved.
+// Solution: AirTrafficControl
+// Project: AirTrafficControl
+// Filename: Circle.cs
+// Date - created:2016.08.29 - 21:57
+// Date - current: 2016.08.30 - 12:58
+
+#endregion
+
+#region Usings
+
 using Microsoft.Xna.Framework;
+
+#endregion
 
 namespace AirTrafficControl
 {
@@ -14,9 +28,9 @@ namespace AirTrafficControl
             Radius = radius;
         }
 
-        public float Radius { get; private set; }
-        public float X { get; private set; }
-        public float Y { get; private set; }
+        public float Radius { get; }
+        public float X { get; }
+        public float Y { get; }
 
         public Vector2 ToVector2() => new Vector2(X, Y);
 
@@ -31,10 +45,12 @@ namespace AirTrafficControl
                 new Point(rectangle.Bottom, rectangle.Left)
             };
 
-            Circle tmpThis = this;
-            if (corners.Any(corner => tmpThis.ContainsPoint(corner)))
+            for (var i = 0; i < corners.Length; i++)
             {
-                return true;
+                if (ContainsPoint(corners[i]))
+                {
+                    return true;
+                }
             }
 
             // next we want to know if the left, top, right or bottom edges overlap

@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Constants.cs
 // Date - created:2016.08.15 - 14:34
-// Date - current: 2016.08.16 - 13:12
+// Date - current: 2016.08.30 - 12:58
 
 #endregion
 
@@ -25,14 +25,18 @@ namespace AirTrafficControl
     {
         public const string TEXTURE_DIR = "Textures";
         public const string SHADER_DIR = "Shader";
+        public const string FONTS_DIR = "Fonts";
+
         public const float MAX_RAD = 500f;
         public const float MIN_RAD = 250f;
-        public const int AIRPLANE_COUNT = 3;
-        public const int AIRPORT_COUNT = 2;
+        public const int AIRPLANE_COUNT = 30;
+        public const int AIRPORT_COUNT = 3;
         public const float DEFAULT_SPEED = 50;
         public const float SPEED_LOSS = .999f;
         public const float MIN_SPEED = 20;
         public const RenderTarget2D DEFAULT_TARGET = null; // A bit cheaty, but who the hell cares :P
+        public const float DISSOLVING_SPEED_OF_THE_AIRPLANE_WHEN_IN_GOAL = .001f;
+        public const float DISSOLVING_SPEED_OF_THE_AIRPLANE_WHEN_RADAR = .002f;
 
         // Constants for the Retro-Shader
         public const int MAX_TIME_RUMBELING = 1000;
@@ -47,7 +51,7 @@ namespace AirTrafficControl
         //public static readonly Vector2 DefaultMovementSpeed = new Vector2(50, 50);
 
         // Factories:
-        public static readonly AirplaneFactory TheAirplaneFactory=new AirplaneFactory();
+        public static readonly AirplaneFactory TheAirplaneFactory = new AirplaneFactory();
         public static readonly AirportFactory TheAirportFactory = new AirportFactory();
     }
 }

@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Retro.cs
 // Date - created:2016.08.16 - 12:55
-// Date - current: 2016.08.16 - 13:12
+// Date - current: 2016.08.30 - 12:58
 
 #endregion
 
@@ -23,14 +23,14 @@ namespace AirTrafficControl.Shader
 {
     internal static class Retro
     {
+        private static float _rumbleTime;
+        private static float _dontRumble;
+        private static bool _rumbleing;
+
         public static void Initialize(Random rand)
         {
             _dontRumble = rand.Next(MIN_TIME_NOT_RUMBELING, MAX_TIME_NOT_RUMBELING);
         }
-
-        private static float _rumbleTime;
-        private static float _dontRumble;
-        private static bool _rumbleing;
 
         public static void Retrorize(SpriteBatch spriteBatch, RenderTarget2D toRetrorize)
         {
@@ -49,35 +49,35 @@ namespace AirTrafficControl.Shader
             {
                 if (_rumbleing)
                 {
-                    _rumbleTime -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                    _rumbleTime -= (float) gameTime.ElapsedGameTime.TotalMilliseconds;
                 }
                 else
                 {
                     _rumbleing = true;
                     _rumbleTime = rand.Next(MIN_TIME_RUMBELING, MAX_TIME_RUMBELING);
 
-                    var rX = (rand.Next(0, 5) - 2) *
-                             (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var rY = (rand.Next(0, 5) - 2) *
-                             (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var r1X = (rand.Next(0, 5) - 2) *
-                              (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var r1Y = (rand.Next(0, 5) - 2) *
-                              (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var r2X = (rand.Next(0, 5) - 2) *
-                              (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
-                    var r2Y = (rand.Next(0, 5) - 2) *
-                              (gameTime.ElapsedGameTime.Milliseconds / (float)gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var rX = (rand.Next(0, 5) - 2)*
+                             (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var rY = (rand.Next(0, 5) - 2)*
+                             (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var r1X = (rand.Next(0, 5) - 2)*
+                              (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var r1Y = (rand.Next(0, 5) - 2)*
+                              (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var r2X = (rand.Next(0, 5) - 2)*
+                              (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
+                    var r2Y = (rand.Next(0, 5) - 2)*
+                              (gameTime.ElapsedGameTime.Milliseconds/(float) gameTime.ElapsedGameTime.TotalMilliseconds);
 
                     Game1.Shader["Retro"].Parameters["RumbleVectorR"].SetValue(
-                        new Vector2(rX / DisplayWidth,
-                            rY / DisplayHeight));
+                        new Vector2(rX/DisplayWidth,
+                            rY/DisplayHeight));
                     Game1.Shader["Retro"].Parameters["RumbleVectorG"].SetValue(
-                        new Vector2(r1X / DisplayWidth,
-                            r1Y / DisplayHeight));
+                        new Vector2(r1X/DisplayWidth,
+                            r1Y/DisplayHeight));
                     Game1.Shader["Retro"].Parameters["RumbleVectorB"].SetValue(
-                        new Vector2(r2X / DisplayWidth,
-                            r2Y / DisplayHeight));
+                        new Vector2(r2X/DisplayWidth,
+                            r2Y/DisplayHeight));
                 }
 
                 if (_rumbleTime <= 0)
@@ -91,7 +91,7 @@ namespace AirTrafficControl.Shader
             }
             else
             {
-                _dontRumble -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                _dontRumble -= (float) gameTime.ElapsedGameTime.TotalMilliseconds;
             }
         }
     }

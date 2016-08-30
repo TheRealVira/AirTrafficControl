@@ -6,7 +6,7 @@
 // Project: AirTrafficControl
 // Filename: Grid.cs
 // Date - created:2016.08.16 - 12:55
-// Date - current: 2016.08.16 - 13:12
+// Date - current: 2016.08.30 - 12:58
 
 #endregion
 
@@ -21,6 +21,8 @@ namespace AirTrafficControl.Shader
 {
     internal static class Grid
     {
+        private static readonly Vector4 COLOR1 = new Vector4(.01f, .1f, .01f, 1);
+
         public static void Initialize()
         {
             Game1.Shader["Grid"].Parameters["ScreenCoords"].SetValue(new Vector2(Constants.DisplayWidth,
@@ -30,8 +32,6 @@ namespace AirTrafficControl.Shader
             Game1.Shader["Grid"].Parameters["Color2"].SetValue(Color.Transparent.ToVector4());
             Game1.Shader["Grid"].CurrentTechnique.Passes[0].Apply();
         }
-
-        private static readonly Vector4 COLOR1 = new Vector4(.01f, .1f, .01f, 1);
 
         public static void Draw(SpriteBatch sp)
         {

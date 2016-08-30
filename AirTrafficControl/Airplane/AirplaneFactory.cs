@@ -1,13 +1,26 @@
-﻿using System;
+﻿#region License
+
+// Copyright (c) 2016, Vira
+// All rights reserved.
+// Solution: AirTrafficControl
+// Project: AirTrafficControl
+// Filename: AirplaneFactory.cs
+// Date - created:2016.08.29 - 20:05
+// Date - current: 2016.08.30 - 12:58
+
+#endregion
+
+#region Usings
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+
+#endregion
 
 namespace AirTrafficControl.Airplane
 {
-    public class AirplaneFactory:IFactory<Airplane>
+    public class AirplaneFactory : IFactory<Airplane>
     {
         private static readonly string[] CoolNames =
         {
@@ -28,21 +41,17 @@ namespace AirTrafficControl.Airplane
 
         public IEnumerable<Airplane> Factorize(Random rand, int count)
         {
-            if (rand == null||Game1.Airports==null||Game1.Airports.Count==0)
+            if (rand == null || Game1.Airports == null || Game1.Airports.Count == 0)
             {
                 yield break; // Fast breakout, before something else breaks...
             }
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var position = new Vector2(rand.Next(0, Constants.DisplayWidth), rand.Next(0, Constants.DisplayHeight));
                 var randomAirport = Game1.Airports.RandomItem(rand);
 
-                var targetVector = randomAirport._boundings.ToVector2() - position; // Getting raw vector
-                targetVector.Normalize(); // Normalizing the raw vector (notice here, that we'll get some loss of precision)
-                targetVector *= Constants.DEFAULT_SPEED; // Multiplying the normalized vector by my speedy constant.
-
-                yield return new Airplane(CoolNames[rand.Next(0,CoolNames.Length)],position, targetVector, randomAirport);
+                yield return new Airplane(CoolNames[rand.Next(0, CoolNames.Length)], position, randomAirport);
             }
         }
     }

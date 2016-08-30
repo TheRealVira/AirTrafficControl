@@ -79,3 +79,15 @@
 /processorParam:DebugMode=Auto
 /build:Shader/PseudoRandom.fx
 
+#begin Fonts/Radar.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Radar.spritefont
+
+#begin Fonts/Airplane.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Airplane.spritefont
+
